@@ -6,6 +6,7 @@ import com.interlink.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -70,5 +71,10 @@ public class TestCategoryAndItemDAO {
     public void testGetAndAddItem() throws Exception {
         Item item = new Item();
         item.setName("Nokia");
+        item.setCategory(categoryDAO.getCategoryForName("phone"));
+        item.setPrice(new BigDecimal(2500));
+        item.setQuantity(5);
+        itemDAO.add(item);
+        assertThat(categoryDAO.get(), is(item));
     }
 }

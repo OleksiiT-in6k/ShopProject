@@ -40,6 +40,17 @@ public class CategoryDAO extends AbstractDAO {
         statement.close();
     }
 
+    public Category getCategoryForName(String name) throws SQLException {
+        Connection connection = connectionFactory.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("Select*From Categories Where name='" + name + "';");
+        Category category = new Category();
+        category.setId(rs.getInt("id"));
+        category.setName(rs.getString("name"));
+        return category;
+
+    }
+
     public HashMap<Category, Integer> getCategoriesWithItemQuantity() throws SQLException {
         HashMap<Category, Integer> result = new HashMap<Category, Integer>();
         Connection connection = connectionFactory.getConnection();

@@ -15,10 +15,10 @@ public class ItemDAO extends AbstractDAO {
         super(connectionFactory);
     }
 
-    public void put(Category category) throws SQLException {
+    public void add(Item item) throws SQLException {
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
-        statement.executeUpdate("INSERT INTO categories(name) VALUES('" + category.getName() + "');");
+        statement.executeUpdate("INSERT INTO item(name,number,price,category_id) VALUES('" + item.getName() + "');");
         statement.close();
     }
 
