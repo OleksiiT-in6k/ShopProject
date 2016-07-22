@@ -11,11 +11,6 @@ public class Category {
 
     }
 
-    public Category(String record) {
-        String parameters[] = record.split(",");
-        name = parameters[0];
-    }
-
 
     public int getId() {
         return id;

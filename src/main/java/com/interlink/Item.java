@@ -9,8 +9,9 @@ public class Item {
     private int id;
     private String name;
     private int quantity;
-    private int categoryId;
+    private Category category;
     private BigDecimal price;
+
 
 
     public int getId() {
@@ -46,12 +47,13 @@ public class Item {
         this.price = price;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override
@@ -62,8 +64,8 @@ public class Item {
         Item item = (Item) o;
 
         if (quantity != item.quantity) return false;
-        if (categoryId != item.categoryId) return false;
         if (name != null ? !name.equals(item.name) : item.name != null) return false;
+        if (category != null ? !category.equals(item.category) : item.category != null) return false;
         return price != null ? price.equals(item.price) : item.price == null;
 
     }
@@ -72,7 +74,7 @@ public class Item {
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + quantity;
-        result = 31 * result + categoryId;
+        result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
     }

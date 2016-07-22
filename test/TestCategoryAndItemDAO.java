@@ -2,9 +2,7 @@
  * Created by employee on 7/21/16.
  */
 
-import com.interlink.Category;
-import com.interlink.CategoryDAO;
-import com.interlink.ConnectionFactory;
+import com.interlink.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,9 +16,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class TestCategoryDAO {
+public class TestCategoryAndItemDAO {
 
     private static CategoryDAO categoryDAO;
+    private static ItemDAO itemDAO;
     private static Connection connection;
 
 
@@ -55,17 +54,21 @@ public class TestCategoryDAO {
     }
 
     @Test
-    public void testGetCategoryNames() throws Exception {
-        categoryDAO.addCategory(new Category("phone"));
-        categoryDAO.addCategory(new Category("blender"));
-        List<Category> expected = Arrays.asList(new Category("phone"), new Category("blender"));
-        assertThat(categoryDAO.getCategories(), is(expected));
+    public void testGetAndAddCategory() throws Exception {
+        Category categoryFirst = new Category();
+        categoryFirst.setName("phone");
+        categoryDAO.put(categoryFirst);
+        Category categorySecond = new Category();
+        categorySecond.setName("blender");
+        categoryDAO.put(categorySecond);
+        List<Category> expected = Arrays.asList(categoryFirst, categorySecond);
+        assertThat(categoryDAO.get(), is(expected));
     }
+
 
     @Test
-    public void testGetItemsFromCategory() throws Exception {
-
+    public void testGetAndAddItem() throws Exception {
+        Item item = new Item();
+        item.setName("Nokia");
     }
-
-
 }

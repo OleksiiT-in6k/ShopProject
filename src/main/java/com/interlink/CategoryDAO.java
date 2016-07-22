@@ -17,7 +17,7 @@ public class CategoryDAO extends AbstractDAO {
         super(connectionFactory);
     }
 
-    public List<Category> getCategories() throws SQLException {
+    public List<Category> get() throws SQLException {
         List<Category> result = new ArrayList<Category>();
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
@@ -33,7 +33,7 @@ public class CategoryDAO extends AbstractDAO {
         return result;
     }
 
-    public void addCategory(Category category) throws SQLException {
+    public void put(Category category) throws SQLException {
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
         statement.executeUpdate("INSERT INTO categories(name) VALUES('" + category.getName() + "');");

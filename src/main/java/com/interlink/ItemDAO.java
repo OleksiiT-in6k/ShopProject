@@ -15,7 +15,14 @@ public class ItemDAO extends AbstractDAO {
         super(connectionFactory);
     }
 
-    public List<Item> getCategories() throws SQLException {
+    public void put(Category category) throws SQLException {
+        Connection connection = connectionFactory.getConnection();
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("INSERT INTO categories(name) VALUES('" + category.getName() + "');");
+        statement.close();
+    }
+
+    public List<Item> get() throws SQLException {
         List<Item> result = new ArrayList<Item>();
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
@@ -25,7 +32,6 @@ public class ItemDAO extends AbstractDAO {
             item.setId(rs.getInt("id"));
             item.setName(rs.getString("name"));
             item.setQuantity(rs.getInt("number"));
-            item.setCategoryId(rs.getInt("category_id"));
             item.setPrice(rs.getBigDecimal("price"));
             result.add(item);
         }
