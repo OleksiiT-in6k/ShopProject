@@ -2,6 +2,7 @@ package com.interlink.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * Created by employee on 7/22/16.
@@ -15,6 +16,7 @@ public class Item {
     private int number;
     private Category category;
     private BigDecimal price;
+    private Set<Order> orders;
 
 
     public Item(String name, int number, BigDecimal price) {
@@ -73,6 +75,15 @@ public class Item {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
     }
 
     @Override

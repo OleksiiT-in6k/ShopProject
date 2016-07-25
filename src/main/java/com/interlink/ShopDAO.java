@@ -2,12 +2,14 @@ package com.interlink;
 
 import com.interlink.entity.Category;
 import com.interlink.entity.Item;
-import com.interlink.entity.Order;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +39,8 @@ public class ShopDAO extends AbstractDAO {
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
-        } finally {
         }
+
         for (Category category : categories) {
             result.put(category, category.getItems().size());
         }
@@ -47,18 +49,28 @@ public class ShopDAO extends AbstractDAO {
 
 
     public List<Item> getTop3ItemsFromCategory(String categoryName, LocalDateTime now) throws SQLException {
-        List<Item> result;
-        Connection connection = connectionFactory.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT Items.* FROM items " +
-                "JOIN orders_items ON items.id=orders_items.item_id INNER JOIN Categories on Categories.name='"
-                + categoryName + "'JOIN Orders ON Orders.id=orders_items.order_id" +
-                " WHERE items.category_id=categories.id AND(Orders.dateTime>=" +
-                "DATE_SUB('" + Timestamp.valueOf(now) + "', INTERVAL 2 MONTH)) GROUP BY Items.id " +
-                "ORDER BY SUM(orders_items.number) DESC LIMIT 3 ");
-        result = parseResultSetToItem(rs);
-        rs.close();
-        statement.close();
+        List<Item> result = null;
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            result = session.createQuery("Select order.items FROM Order order WHERE order.items.category").list();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+
+//        Connection connection = connectionFactory.getConnection();
+//        Statement statement = connection.createStatement();
+//        ResultSet rs = statement.executeQuery("SELECT Items.* FROM items " +
+//                "JOIN orders_items ON items.id=orders_items.item_id INNER JOIN Categories on Categories.name='"
+//                + categoryName + "'JOIN Orders ON Orders.id=orders_items.order_id" +
+//                " WHERE items.category_id=categories.id AND(Orders.dateTime>=" +
+//                "DATE_SUB('" + Timestamp.valueOf(now) + "', INTERVAL 2 MONTH)) GROUP BY Items.id " +
+//                "ORDER BY SUM(orders_items.number) DESC LIMIT 3 ");
+//        result = parseResultSetToItem(rs);
+//        rs.close();
+//        statement.close();
         return result;
     }
 
@@ -76,22 +88,22 @@ public class ShopDAO extends AbstractDAO {
         return result;
     }
 
-    public Order getOrderForUser(int userId) throws SQLException {
-        Order result = new Order();
-        Connection connection = connectionFactory.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT Orders.* FROM Orders " +
-                "WHERE Orders.user_id= " + userId + " GROUP BY Orders.id");
-        while (rs.next()) {
-            result.setId(rs.getInt("id"));
-            result.setUser(rs.getInt("user_id"));
-            result.setDateTime(rs.getTimestamp("dateTime").toLocalDateTime());
-            result.setTotalSum(rs.getBigDecimal("total"));
-        }
-        rs.close();
-        statement.close();
-        return result;
-    }
+//    public Order getOrderForUser(int userId) throws SQLException {
+//        Order result = new Order();
+//        Connection connection = connectionFactory.getConnection();
+//        Statement statement = connection.createStatement();
+//        ResultSet rs = statement.executeQuery("SELECT Orders.* FROM Orders " +
+//                "WHERE Orders.user_id= " + userId + " GROUP BY Orders.id");
+//        while (rs.next()) {
+//            result.setId(rs.getInt("id"));
+//            result.setUser(rs.getInt("user_id"));
+//            result.setDateTime(rs.getTimestamp("dateTime").toLocalDateTime());
+//            result.setTotalSum(rs.getBigDecimal("total"));
+//        }
+//        rs.close();
+//        statement.close();
+//        return result;
+//    }
 
     public List<Item> getItemsForOrder(int orderId) throws SQLException {
         List<Item> result;

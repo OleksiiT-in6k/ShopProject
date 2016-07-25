@@ -3,6 +3,7 @@ package com.interlink.entity;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * Created by Алекс on 24.07.2016.
@@ -11,19 +12,21 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 public class Order {
     int id;
-    int user;
+    User user;
     BigDecimal totalSum;
     LocalDateTime dateTime;
+    Set<Item> items;
 
     public Order() {
     }
 
-    public Order(LocalDateTime dateTime, int user, BigDecimal totalSum) {
+    public Order(LocalDateTime dateTime, User user, BigDecimal totalSum) {
         this.dateTime = dateTime;
         this.user = user;
         this.totalSum = totalSum;
     }
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
@@ -36,11 +39,11 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    public int getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(int user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -62,5 +65,16 @@ public class Order {
         this.totalSum = totalSum;
     }
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "orders_items", joinColumns = {
+            @JoinColumn(name = "order_id", nullable = false, updatable = false)},
+            inverseJoinColumns = {@JoinColumn(name = "item_id",
+                    nullable = false, updatable = false)})
+    public Set<Item> getItems() {
+        return items;
+    }
 
+    public void setItems(Set<Item> items) {
+        this.items = items;
+    }
 }
