@@ -27,7 +27,7 @@ public class TestCategoryAndItemDAO {
 
     @BeforeClass
     public static void init() throws Exception {
-        connection = DriverManager.getConnection("jdbc:hsqldb:mem:aname", "", "");
+        connection = DriverManager.getConnection("jdbc:hsqldb:mem:db", "", "");
         createTables(connection);
         fillTables(connection);
         prepareConnectionFactory();
