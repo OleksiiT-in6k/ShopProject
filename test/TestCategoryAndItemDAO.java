@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -85,7 +86,7 @@ public class TestCategoryAndItemDAO {
 
     @Test
     public void testCategoryWithItemsNumber() throws Exception {
-        HashMap<Category, Integer> expected = new HashMap<>();
+        Map<Category, Integer> expected = new HashMap<>();
         expected.put(new Category("phone"), 1);
         expected.put(new Category("TV"), 2);
         expected.put(new Category("laptop"), 5);

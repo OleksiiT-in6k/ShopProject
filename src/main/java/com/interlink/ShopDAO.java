@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by employee on 7/21/16.
@@ -15,7 +16,7 @@ public class ShopDAO extends AbstractDAO {
         super(connectionFactory);
     }
 
-    public HashMap<Category, Integer> getCategoriesWithItemNumber() throws SQLException {
+    public Map<Category, Integer> getCategoriesWithItemNumber() throws SQLException {
         HashMap<Category, Integer> result = new HashMap<Category, Integer>();
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
