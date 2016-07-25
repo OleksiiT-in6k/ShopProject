@@ -10,6 +10,10 @@ public abstract class AbstractDAO {
         this.connectionFactory = connectionFactory;
     }
 
+    public AbstractDAO() {
+
+    }
+
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }

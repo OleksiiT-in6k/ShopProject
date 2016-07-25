@@ -1,5 +1,12 @@
 package com.interlink;
 
+import com.interlink.entity.Category;
+import com.interlink.entity.Item;
+import com.interlink.entity.Order;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,36 +17,45 @@ import java.util.List;
  * Created by employee on 7/21/16.
  */
 public class ShopDAO extends AbstractDAO {
-
+    Session session;
     public ShopDAO(ConnectionFactory connectionFactory) {
         super(connectionFactory);
     }
 
+    public ShopDAO(Session session) {
+        this.session = session;
+    }
+
     public HashMap<Category, Integer> getCategoriesWithItemNumber() throws SQLException {
         HashMap<Category, Integer> result = new HashMap<Category, Integer>();
-        Connection connection = connectionFactory.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT Categories.*,COUNT(items.id) as unique_results " +
-                "FROM Categories LEFT JOIN items on " +
-                "categories.id=items.category_id GROUP BY Categories.id");
-        while (rs.next()) {
-            Category category = new Category(rs.getString("name"));
-            Integer number = rs.getInt("unique_results");
-            result.put(category, number);
+        List<Category> categories = null;
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            categories = session.createQuery("FROM Category").list();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+        }
+        for (Category category : categories) {
+            result.put(category, category.getItems().size());
         }
         return result;
     }
+
 
     public List<Item> getTop3ItemsFromCategory(String categoryName, LocalDateTime now) throws SQLException {
         List<Item> result;
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT Items.*,SUM(orders_items.number) AS summary FROM items " +
+        ResultSet rs = statement.executeQuery("SELECT Items.* FROM items " +
                 "JOIN orders_items ON items.id=orders_items.item_id INNER JOIN Categories on Categories.name='"
                 + categoryName + "'JOIN Orders ON Orders.id=orders_items.order_id" +
                 " WHERE items.category_id=categories.id AND(Orders.dateTime>=" +
                 "DATE_SUB('" + Timestamp.valueOf(now) + "', INTERVAL 2 MONTH)) GROUP BY Items.id " +
-                "ORDER BY summary DESC LIMIT 3 ");
+                "ORDER BY SUM(orders_items.number) DESC LIMIT 3 ");
         result = parseResultSetToItem(rs);
         rs.close();
         statement.close();
@@ -54,7 +70,7 @@ public class ShopDAO extends AbstractDAO {
             item.setName(rs.getString("name"));
             item.setNumber(rs.getInt("number"));
             item.setPrice(rs.getBigDecimal("price"));
-            item.setCategoryId(rs.getInt("category_id"));
+            // item.setCategory(rs.getInt("category_id"));
             result.add(item);
         }
         return result;
@@ -68,7 +84,7 @@ public class ShopDAO extends AbstractDAO {
                 "WHERE Orders.user_id= " + userId + " GROUP BY Orders.id");
         while (rs.next()) {
             result.setId(rs.getInt("id"));
-            result.setUserId(rs.getInt("user_id"));
+            result.setUser(rs.getInt("user_id"));
             result.setDateTime(rs.getTimestamp("dateTime").toLocalDateTime());
             result.setTotalSum(rs.getBigDecimal("total"));
         }
