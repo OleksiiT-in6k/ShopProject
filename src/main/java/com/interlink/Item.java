@@ -8,11 +8,19 @@ import java.math.BigDecimal;
 public class Item {
     private int id;
     private String name;
-    private int quantity;
-    private Category category;
+    private int number;
+    private int categoryId;
     private BigDecimal price;
 
 
+    public Item(String name, int number, BigDecimal price) {
+        this.name = name;
+        this.number = number;
+        this.price = price;
+    }
+
+    public Item() {
+    }
 
     public int getId() {
         return id;
@@ -30,12 +38,12 @@ public class Item {
         this.name = name;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getNumber() {
+        return number;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
 
@@ -47,13 +55,12 @@ public class Item {
         this.price = price;
     }
 
-
-    public Category getCategory() {
-        return category;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     @Override
@@ -63,9 +70,9 @@ public class Item {
 
         Item item = (Item) o;
 
-        if (quantity != item.quantity) return false;
+        if (number != item.number) return false;
+        if (categoryId != item.categoryId) return false;
         if (name != null ? !name.equals(item.name) : item.name != null) return false;
-        if (category != null ? !category.equals(item.category) : item.category != null) return false;
         return price != null ? price.equals(item.price) : item.price == null;
 
     }
@@ -73,8 +80,8 @@ public class Item {
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + quantity;
-        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + number;
+        result = 31 * result + categoryId;
         result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
     }
