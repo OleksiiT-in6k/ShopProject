@@ -1,9 +1,6 @@
 package com.interlink;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,10 +34,12 @@ public class ShopDAO extends AbstractDAO {
         List<Item> result;
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT Items.*,SUM(orders_items.number) FROM items " +
+        ResultSet rs = statement.executeQuery("SELECT Items.*,SUM(orders_items.number) AS summary FROM items " +
                 "JOIN orders_items ON items.id=orders_items.item_id INNER JOIN Categories on Categories.name='"
-                + categoryName + "' WHERE items.category_id=categories.id GROUP BY Items.id " +
-                "ORDER BY SUM(orders_items.number) DESC LIMIT 3 ");
+                + categoryName + "'JOIN Orders ON Orders.id=orders_items.order_id" +
+                " WHERE items.category_id=categories.id AND(Orders.dateTime>=" +
+                "DATE_SUB('" + Timestamp.valueOf(now) + "', INTERVAL 2 MONTH)) GROUP BY Items.id " +
+                "ORDER BY summary DESC LIMIT 3 ");
         result = parseResultSetToItem(rs);
         rs.close();
         statement.close();

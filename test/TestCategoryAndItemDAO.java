@@ -104,7 +104,7 @@ public class TestCategoryAndItemDAO {
         item = new Item("ASUS", 5, new BigDecimal("350.00"));
         item.setCategoryId(2);
         expected.add(item);
-        assertThat(shopDAO.getTop3ItemsFromCategory("laptop", LocalDateTime.of(2016, 10, 10, 10, 10)), is(expected));
+        assertThat(shopDAO.getTop3ItemsFromCategory("laptop", LocalDateTime.of(2016, 7, 7, 10, 10)), is(expected));
     }
 
     @Test
