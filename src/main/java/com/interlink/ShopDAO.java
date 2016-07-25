@@ -46,19 +46,6 @@ public class ShopDAO extends AbstractDAO {
         return result;
     }
 
-    private List<Item> parseResultSetToItem(ResultSet rs) throws SQLException {
-        List<Item> result = new ArrayList<>();
-        while (rs.next()) {
-            Item item = new Item();
-            item.setId(rs.getInt("id"));
-            item.setName(rs.getString("name"));
-            item.setNumber(rs.getInt("number"));
-            item.setPrice(rs.getBigDecimal("price"));
-            item.setCategoryId(rs.getInt("category_id"));
-            result.add(item);
-        }
-        return result;
-    }
 
     public Order getOrderForUser(int userId) throws SQLException {
         Order result = new Order();
@@ -86,6 +73,20 @@ public class ShopDAO extends AbstractDAO {
         result = parseResultSetToItem(rs);
         rs.close();
         statement.close();
+        return result;
+    }
+
+    private List<Item> parseResultSetToItem(ResultSet rs) throws SQLException {
+        List<Item> result = new ArrayList<>();
+        while (rs.next()) {
+            Item item = new Item();
+            item.setId(rs.getInt("id"));
+            item.setName(rs.getString("name"));
+            item.setNumber(rs.getInt("number"));
+            item.setPrice(rs.getBigDecimal("price"));
+            item.setCategoryId(rs.getInt("category_id"));
+            result.add(item);
+        }
         return result;
     }
 }
