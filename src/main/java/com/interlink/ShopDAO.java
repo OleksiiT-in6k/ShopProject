@@ -48,17 +48,19 @@ public class ShopDAO extends AbstractDAO {
     }
 
 
-    public Order getOrderForUser(int userId) throws SQLException {
-        Order result = new Order();
+    public List<Order> getOrdersForUser(int userId) throws SQLException {
+        List<Order> result = new ArrayList<>();
         Connection connection = connectionFactory.getConnection();
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery("SELECT Orders.* FROM Orders " +
                 "WHERE Orders.user_id= " + userId + " GROUP BY Orders.id");
         while (rs.next()) {
-            result.setId(rs.getInt("id"));
-            result.setUserId(rs.getInt("user_id"));
-            result.setDateTime(rs.getTimestamp("dateTime").toLocalDateTime());
-            result.setTotalSum(rs.getBigDecimal("total"));
+            Order order = new Order();
+            order.setId(rs.getInt("id"));
+            order.setUserId(rs.getInt("user_id"));
+            order.setDateTime(rs.getTimestamp("dateTime").toLocalDateTime());
+            order.setTotalSum(rs.getBigDecimal("total"));
+            result.add(order);
         }
         rs.close();
         statement.close();

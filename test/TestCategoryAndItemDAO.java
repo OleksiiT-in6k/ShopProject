@@ -12,10 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,7 +71,8 @@ public class TestCategoryAndItemDAO {
                 "('Lenovo',2,400,2),('ASUS',5,350,2),('HP',7,400,2),('ACER',4,300,2),('DELL',7,450,2)");
         statement.execute();
         statement = connection.prepareStatement("INSERT INTO Orders " +
-                "(user_id,dateTime,total) VALUES (0,'2016-06-18 10:34:09','14250'),(1,'2016-02-14 8:47:01','1100')");
+                "(user_id,dateTime,total) VALUES (0,'2016-06-18 10:34:09','14250'),(1,'2016-02-14 8:47:01','1100')," +
+                "(0,'2016-07-08 12:34:44','5000');");
         statement.execute();
         statement = connection.prepareStatement("INSERT INTO Orders_Items " +
                 "(order_id,item_id,number) VALUES (0,3,7),(0,4,9),(0,5,11),(0,6,10),(0,7,2),(1,1,3),(1,2,3)");
@@ -94,6 +92,20 @@ public class TestCategoryAndItemDAO {
     }
 
     @Test
+    public void testTop3ItemsFromNonexistentCategory() throws Exception {
+        LocalDateTime today = LocalDateTime.of(2016, 7, 7, 10, 10);
+        assertThat(shopDAO.getTop3ItemsFromCategory("blender", today), is(Collections.EMPTY_LIST));
+
+    }
+
+    @Test
+    public void testTop3ItemsFromCategoryWithNoPurchases() throws Exception {
+        List<Item> expected = new ArrayList();
+        LocalDateTime today = LocalDateTime.of(2016, 6, 6, 10, 10);
+        assertThat(shopDAO.getTop3ItemsFromCategory("phone", today), is(expected));
+    }
+
+    @Test
     public void testTop3ItemsFromCategory() throws Exception {
         List<Item> expected = new ArrayList();
         Item item = new Item("HP", 7, new BigDecimal("400.00"));
@@ -105,13 +117,32 @@ public class TestCategoryAndItemDAO {
         item = new Item("ASUS", 5, new BigDecimal("350.00"));
         item.setCategoryId(2);
         expected.add(item);
-        assertThat(shopDAO.getTop3ItemsFromCategory("laptop", LocalDateTime.of(2016, 7, 7, 10, 10)), is(expected));
+        LocalDateTime today = LocalDateTime.of(2016, 7, 7, 10, 10);
+        assertThat(shopDAO.getTop3ItemsFromCategory("laptop", today), is(expected));
+    }
+
+
+    @Test
+    public void testGetOrdersUserWithSingleOrder() throws Exception {
+        Order order = new Order(LocalDateTime.of(2016, 2, 14, 8, 47, 1), 1, new BigDecimal("1100.00"));
+        List<Order> expected = new ArrayList<>();
+        expected.add(order);
+        assertThat(shopDAO.getOrdersForUser(1), is(expected));
     }
 
     @Test
     public void testGetOrdersForUser() throws Exception {
-        Order expected = new Order(LocalDateTime.of(2016, 6, 18, 10, 34, 9), 0, new BigDecimal("14250.00"));
-        assertThat(shopDAO.getOrderForUser(0), is(expected));
+        Order firstOrder = new Order(LocalDateTime.of(2016, 6, 18, 10, 34, 9), 0, new BigDecimal("14250.00"));
+        Order secondOrder = new Order(LocalDateTime.of(2016, 7, 8, 12, 34, 44), 0, new BigDecimal("5000.00"));
+        List<Order> expected = new ArrayList<>();
+        expected.add(firstOrder);
+        expected.add(secondOrder);
+        assertThat(shopDAO.getOrdersForUser(0), is(expected));
+    }
+
+    @Test
+    public void testGetItemsForNonexistentOrder() throws Exception {
+        assertThat(shopDAO.getItemsForOrder(7), is(Collections.EMPTY_LIST));
     }
 
     @Test
